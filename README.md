@@ -2,5 +2,5 @@
 
 <div align="center" class="text-center">
 <h1>CALL OF PYTHON 🐍</h1>
-<p><em>Juego desarrollado para el apredizaje de lis conceptos de programacion con python</em></p>
+<p><em>Juego desarrollado para el apredizaje de los conceptos de programacion con python</em></p>
 
