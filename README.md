@@ -2,7 +2,7 @@
 
 <div align="center" class="text-center">
 <h1>CALL OF PYTHON 🐍</h1>
-<p><em>Juego🎮interactibo para el apredizaje de los conceptos con python.</em></p>
+<p><em>Juego interactibo para el apredizaje de los conceptos con python.</em></p>
 
 ## 🧬 **Tech Stack**
 
