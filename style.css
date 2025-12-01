@@ -6,6 +6,14 @@
 
 }
 
+.tittle_name{
+    color: rgb(21, 126, 21);
+}
+
+.sub_tittle_maim{
+    font-style: italic;
+}
+
 .tittle_main{
  text-align: center;
  
