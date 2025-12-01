@@ -4,7 +4,7 @@
 <h1>CALL OF PYTHON 🐍</h1>
 <p><em>Juego🎮interactibo para el apredizaje de los conceptos con python.</em></p>
 
-## 🧬 **Tech Stack (con íconos oficiales)**
+## 🧬 **Tech Stack**
 
 ### 🔹 **Backend**
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
