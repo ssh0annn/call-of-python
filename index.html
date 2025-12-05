@@ -107,6 +107,10 @@
         // Lógica JavaScript para los escenarios dinámicos
         
         let currentScenarioIndex = 0;
+        
+        // Nuevo: Array para rastrear qué escenarios han sido completados
+        // Inicializado con todos en false.
+        let completionStatus; 
 
         // Definición de los escenarios de aprendizaje
         const SCENARIOS = [
@@ -118,6 +122,7 @@
                 <p class="mt-3">Se utiliza en campos como desarrollo web, ciencia de datos, inteligencia artificial y automatización.</p>`,
                 task: "No hay ejercicio en esta unidad. Presiona 'Siguiente Unidad' para comenzar.",
                 validation: (code) => {
+                    // La unidad de introducción siempre se considera completada con el botón "Siguiente Unidad"
                     return { success: true, feedback: "¡Bienvenido! Es hora de empezar a programar." };
                 }
             },
@@ -201,8 +206,56 @@
             }
         ];
 
+        /**
+         * Función para actualizar el estado de bloqueo visual en el sidebar.
+         * Muestra un candado (🔒) si la unidad anterior no ha sido completada.
+         */
+        function updateSidebarLockStatus() {
+            SCENARIOS.forEach((scenario, index) => {
+                const navItem = document.getElementById(`nav-item-${index}`);
+                
+                // La unidad 0 (Introducción) siempre está disponible.
+                if (index > 0) {
+                    const isPreviousCompleted = completionStatus[index - 1];
+                    
+                    if (isPreviousCompleted) {
+                        // Desbloqueado: se puede hacer clic
+                        navItem.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-red-100');
+                        navItem.classList.add('hover:bg-indigo-100');
+                        navItem.innerHTML = `${index}. ${scenario.title}`;
+                    } else {
+                        // Bloqueado: no se puede hacer clic, icono de candado
+                        navItem.classList.add('opacity-50', 'cursor-not-allowed');
+                        navItem.classList.remove('hover:bg-indigo-100');
+                        navItem.innerHTML = `<span class="mr-1" title="Unidad Bloqueada">&#128274;</span> ${index}. ${scenario.title}`;
+                    }
+                }
+            });
+        }
+
+
         // Función para cargar el escenario actual
         function loadScenario(index) {
+            // Lógica de Bloqueo: Si el índice es mayor que 0 y el escenario anterior NO está completado
+            if (index > 0 && !completionStatus[index - 1]) {
+                const resultsArea = document.getElementById('results-area');
+                const feedbackMessage = document.getElementById('feedback-message');
+                const lastCompletedIndex = completionStatus.lastIndexOf(true);
+                const goToIndex = lastCompletedIndex === -1 ? 0 : lastCompletedIndex;
+
+                // Muestra un mensaje de bloqueo
+                resultsArea.classList.remove('hidden', 'bg-green-100', 'border-green-500', 'text-green-700');
+                resultsArea.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+                feedbackMessage.textContent = "¡Unidad Bloqueada! Debes completar el escenario anterior para acceder a este tema.";
+                document.getElementById('next-button').classList.add('hidden');
+
+                // Si se intentó navegar directamente a una unidad bloqueada, volvemos a la última completada.
+                if (index !== currentScenarioIndex) {
+                    loadScenario(goToIndex); 
+                }
+                return;
+            }
+
             currentScenarioIndex = index;
             const scenario = SCENARIOS[index];
 
@@ -221,6 +274,7 @@
 
             if (scenario.task) {
                 taskEl.innerHTML = scenario.task;
+                // Mantener el valor predeterminado si existe, sino limpiarlo
                 editorEl.value = scenario.id === 3 ? "numero = 15\n# Escribe tu código aquí...\n" : "";
                 editorEl.classList.remove('hidden');
                 runButton.classList.remove('hidden');
@@ -238,6 +292,14 @@
 
             resultsArea.classList.add('hidden');
             nextButton.classList.add('hidden');
+
+            // 5. Si la unidad ya fue completada, mostrar el botón de siguiente
+            if (completionStatus[index]) {
+                resultsArea.classList.remove('hidden', 'bg-red-100', 'border-red-500', 'text-red-700');
+                resultsArea.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                feedbackMessage.textContent = "¡Ya has completado este escenario! Puedes pasar al siguiente.";
+                nextButton.classList.remove('hidden');
+            }
         }
 
         // Función para manejar el botón de Ejecutar/Verificar
@@ -259,7 +321,18 @@
                 // Éxito
                 resultsArea.classList.remove('bg-red-100', 'border-red-500', 'text-red-700');
                 resultsArea.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
-                nextButton.classList.remove('hidden');
+                
+                // Nuevo: Marcar el escenario como completado y actualizar la interfaz
+                completionStatus[currentScenarioIndex] = true;
+                updateSidebarLockStatus();
+
+                // Mostrar botón para avanzar
+                if (currentScenarioIndex < SCENARIOS.length - 1) {
+                    nextButton.classList.remove('hidden');
+                } else {
+                    feedbackMessage.textContent += " ¡Has completado todas las unidades iniciales!";
+                }
+
             } else {
                 // Error
                 resultsArea.classList.remove('bg-green-100', 'border-green-500', 'text-green-700');
@@ -271,17 +344,33 @@
         function loadNextScenario() {
             const nextIndex = currentScenarioIndex + 1;
             if (nextIndex < SCENARIOS.length) {
+                // Ya se validó en runCode que la unidad actual esté completa.
                 loadScenario(nextIndex);
             } else {
                 // Fin de los escenarios
-                alert("¡Felicidades! Has completado todos los escenarios iniciales.");
-                loadScenario(0); // Volver al inicio
+                // En lugar de alert, usamos el área de resultados
+                const resultsArea = document.getElementById('results-area');
+                const feedbackMessage = document.getElementById('feedback-message');
+                
+                resultsArea.classList.remove('hidden', 'bg-red-100', 'border-red-500', 'text-red-700');
+                resultsArea.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                feedbackMessage.textContent = "¡Felicidades! Has completado todos los escenarios iniciales.";
+                document.getElementById('next-button').classList.add('hidden');
+
+                // Opcional: Podrías volver a la introducción o mantener el estado.
+                // loadScenario(0); 
             }
         }
 
         // Función de inicialización
         function initApp() {
             const unitList = document.getElementById('unit-list');
+            
+            // Inicializar el estado de completado
+            completionStatus = new Array(SCENARIOS.length).fill(false);
+            
+            // El primer escenario (Introducción) siempre se considera completado para que el usuario pueda avanzar al 1.
+            completionStatus[0] = true; 
 
             // Crear los ítems de navegación
             SCENARIOS.forEach((scenario, index) => {
@@ -291,7 +380,7 @@
                 a.id = `nav-item-${index}`;
                 a.href = "#";
                 a.textContent = `${index}. ${scenario.title}`;
-                a.className = "nav-item block p-2 rounded-lg text-gray-700 hover:bg-indigo-100 transition duration-150 cursor-pointer";
+                a.className = "nav-item block p-2 rounded-lg text-gray-700 transition duration-150 cursor-pointer";
                 a.onclick = (e) => {
                     e.preventDefault();
                     loadScenario(index);
@@ -299,6 +388,9 @@
                 li.appendChild(a);
                 unitList.appendChild(li);
             });
+            
+            // Actualizar el estado inicial de bloqueo antes de cargar
+            updateSidebarLockStatus();
 
             // Cargar el primer escenario al inicio
             loadScenario(0);
