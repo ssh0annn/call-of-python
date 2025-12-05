@@ -4,98 +4,193 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aprende Python Interactivo</title>
-    <!-- Carga de Tailwind CSS para un diseño moderno y responsive -->
+    <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Carga de la fuente Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos personalizados para la tipografía y el editor */
+        /* Paleta de colores inspirada en el tema oscuro y morado/índigo */
+        :root {
+            --color-bg-dark: #1e1231; /* Morado/Índigo muy oscuro */
+            --color-primary: #8b5cf6; /* Ígdigo medio (Púrpura) */
+            --color-secondary: #c4b5fd; /* Ígdigo claro */
+            --color-text-light: #f3f4f6;
+            --color-text-dark: #1f2937;
+            /* Nuevos colores base para feedback */
+            --color-success-base: #10b981; /* Esmeralda/Verde */
+            --color-error-base: #ef4444; /* Rojo */
+        }
+
+        /* Fondo degradado oscuro */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7f9fc;
+            background: linear-gradient(135deg, var(--color-bg-dark) 0%, #3e1f75 100%);
+            color: var(--color-text-light);
+            min-height: 100vh;
         }
+
+        /* Estilo Glassmorphism para los contenedores principales (simulando los paneles flotantes) */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.1); /* Blanco semitransparente */
+            backdrop-filter: blur(10px); /* Desenfoque */
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Estilo para el editor de código: debe ser legible y contrastar */
         .code-editor {
             font-family: monospace;
-            background-color: #1e1e1e; /* Fondo oscuro tipo IDE */
-            color: #d4d4d4; /* Color de texto claro */
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo más oscuro para código */
+            color: #4CAF50; /* Texto verde neon para código (contraste alto) */
             padding: 1rem;
-            border-radius: 0.5rem;
+            border-radius: 12px;
             resize: none;
             min-height: 200px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
             transition: all 0.2s;
         }
+
         /* Resaltar el tema actual en el sidebar */
+        .nav-item {
+            color: var(--color-text-light);
+            padding: 0.75rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
         .nav-item.active {
-            background-color: #4f46e5;
+            background: var(--color-primary);
             color: white;
             font-weight: 600;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.5);
         }
+
         /* Estilo para el texto de código en las explicaciones */
         code {
-            background-color: #e0e7ff;
-            color: #4f46e5;
+            background-color: rgba(139, 92, 246, 0.2); /* Fondo púrpura suave */
+            color: var(--color-secondary);
             padding: 2px 4px;
             border-radius: 4px;
             font-weight: 600;
         }
+
+        /* Ajustes de color de texto para las secciones de contenido */
+        #topic-title, #task-description, #theory-section, .text-content {
+            color: var(--color-text-light);
+        }
+
+        /* Estilo para los botones */
+        .custom-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .run-button {
+            background-color: var(--color-success-base); /* Verde brillante */
+            color: var(--color-text-dark);
+        }
+        .run-button:hover {
+            background-color: #059669; /* Verde oscuro */
+            transform: translateY(-2px);
+        }
+
+        .next-button {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        .next-button:hover {
+            background-color: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        /* ------------------------------------------
+        NUEVOS ESTILOS PARA EL ÁREA DE RESULTADOS 
+        (Más suaves e integrados con el Glassmorphism)
+        ------------------------------------------
+        */
+        .feedback-success {
+            /* Fondo ligeramente verde y semitransparente, mezclado con el fondo oscuro */
+            background-color: rgba(16, 185, 129, 0.1); /* Verde esmeralda (10%) */
+            border: 1px solid rgba(16, 185, 129, 0.5); /* Borde suave de color éxito */
+            color: var(--color-secondary); /* Texto púrpura claro */
+            backdrop-filter: blur(5px);
+        }
+        .feedback-error {
+            /* Fondo ligeramente rojo y semitransparente */
+            background-color: rgba(239, 68, 68, 0.1); /* Rojo (10%) */
+            border: 1px solid rgba(239, 68, 68, 0.5); /* Borde suave de color error */
+            color: var(--color-secondary); /* Texto púrpura claro */
+            backdrop-filter: blur(5px);
+        }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col">
 
-    <!-- Encabezado (Header) -->
-    <header class="bg-white shadow-md p-4 sticky top-0 z-10">
+    <!-- Encabezado (Header) - Fijo y con Glassmorphism suave -->
+    <header class="p-4 sticky top-0 z-10 glass-panel shadow-2xl">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-indigo-600">Aprende Python Interactivo</h1>
-            <span class="text-sm text-gray-500 hidden sm:block">Conceptos Esenciales para Principiantes</span>
+            <h1 class="text-3xl font-bold text-white tracking-wider">
+                <span style="color: var(--color-primary);">PYTHON</span> INMERSIVO
+            </h1>
+            <span class="text-sm text-gray-300 hidden sm:block">Conceptos Esenciales</span>
         </div>
     </header>
 
     <!-- Contenedor Principal (Sidebar y Contenido) -->
-    <div class="flex flex-1 max-w-7xl mx-auto w-full">
+    <div class="flex flex-1 max-w-7xl mx-auto w-full p-4 md:p-8">
 
-        <!-- Navegación (Sidebar) - Visible en escritorio, colapsable en móvil -->
-        <nav id="sidebar" class="w-64 bg-white p-4 border-r border-gray-200 hidden md:block">
-            <h2 class="text-lg font-semibold mb-4 text-gray-700">Unidades</h2>
+        <!-- Navegación (Sidebar) - Contenedor Flotante -->
+        <nav id="sidebar" class="w-64 p-4 mr-6 glass-panel hidden md:block self-start">
+            <h2 class="text-xl font-semibold mb-4 text-white border-b border-gray-600 pb-2">Unidades</h2>
             <ul id="unit-list">
                 <!-- Los ítems de las unidades se inyectarán aquí por JavaScript -->
             </ul>
         </nav>
 
-        <!-- Área de Contenido Principal -->
-        <main class="flex-1 p-6 md:p-8">
-            <div id="content-area" class="bg-white p-6 rounded-lg shadow-xl">
+        <!-- Área de Contenido Principal - Contenedor Flotante -->
+        <main class="flex-1">
+            <div id="content-area" class="p-6 md:p-8 glass-panel shadow-2xl">
+                
                 <!-- Título del Tema -->
-                <h2 id="topic-title" class="text-3xl font-bold text-gray-800 mb-4 border-b pb-2"></h2>
+                <h2 id="topic-title" class="text-3xl font-extrabold text-white mb-4 border-b border-gray-600 pb-2"></h2>
 
                 <!-- Explicación Teórica -->
-                <section id="theory-section" class="mb-8 text-gray-600 leading-relaxed"></section>
+                <section id="theory-section" class="mb-8 text-content leading-relaxed text-lg"></section>
 
                 <!-- Escenario Dinámico (Problema y Editor) -->
-                <section id="scenario-section" class="bg-indigo-50 p-6 rounded-lg border-l-4 border-indigo-500">
-                    <h3 class="text-2xl font-semibold text-indigo-700 mb-4">Escenario de Práctica</h3>
-                    <p id="task-description" class="mb-4 text-gray-700"></p>
+                <section id="scenario-section" class="p-6 rounded-xl border border-dashed border-gray-500 bg-black/20">
+                    <h3 class="text-2xl font-semibold text-white mb-4">Escenario de Práctica</h3>
+                    <p id="task-description" class="mb-4 text-content"></p>
 
                     <!-- Editor de Código -->
-                    <textarea id="code-editor" class="code-editor w-full border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500" placeholder="# Escribe tu código Python aquí..."></textarea>
+                    <textarea id="code-editor" class="code-editor w-full focus:ring-var(--color-primary) focus:border-var(--color-primary)" placeholder="# Escribe tu código Python aquí..."></textarea>
 
                     <!-- Botón de Ejecutar -->
-                    <button id="run-button" onclick="runCode()" class="mt-4 px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-150 shadow-md">
+                    <button id="run-button" onclick="runCode()" class="custom-button run-button mt-4">
                         Ejecutar / Verificar
                     </button>
                 </section>
 
                 <!-- Área de Resultados y Retroalimentación -->
-                <div id="results-area" class="mt-6 p-4 rounded-lg hidden" role="alert">
-                    <p id="feedback-message" class="font-medium"></p>
+                <div id="results-area" class="mt-6 p-4 rounded-xl hidden" role="alert">
+                    <p id="feedback-message" class="font-medium text-lg"></p>
                     
                     <!-- Contenedor para la salida de la consola -->
-                    <div id="console-output-container" class="mt-3 p-4 rounded-lg bg-gray-800 text-gray-200 text-sm overflow-auto max-h-40">
-                        <strong class="text-indigo-400">Salida de la Consola:</strong>
+                    <div id="console-output-container" class="mt-3 p-4 rounded-lg bg-black/50 text-green-400 text-sm overflow-auto max-h-40">
+                        <strong class="text-white">Salida de la Consola:</strong>
                         <pre id="console-output" class="mt-1 font-mono whitespace-pre-wrap"></pre>
                     </div>
 
-                    <button id="next-button" onclick="loadNextScenario()" class="hidden mt-4 px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
+                    <button id="next-button" onclick="loadNextScenario()" class="custom-button next-button hidden mt-4">
                         Siguiente Unidad &rarr;
                     </button>
                 </div>
@@ -104,14 +199,14 @@
     </div>
 
     <!-- Pie de Página (Footer) -->
-    <footer class="bg-gray-800 text-white p-4 mt-auto">
-        <div class="max-w-7xl mx-auto text-center text-sm">
-            &copy; 2024 Aprende Python Interactivo. Proyecto Educativo.
+    <footer class="bg-black/30 p-4 mt-auto w-full">
+        <div class="max-w-7xl mx-auto text-center text-sm text-gray-400">
+            &copy; 2024 Proyecto de Aprendizaje Interactivo.
         </div>
     </footer>
 
     <script>
-        // Lógica JavaScript para los escenarios dinámicos
+        // Lógica JavaScript para los escenarios dinámicos (SIN CAMBIOS RESPECTO AL CONTENIDO)
         
         let currentScenarioIndex = 0;
         
@@ -122,7 +217,7 @@
         const SCENARIOS = [
             {
                 id: 0,
-                title: "Introducción a Python",
+                title: "0. Introducción a Python",
                 explanation: `Python es uno de los lenguajes de programación más populares del mundo. Es conocido por su sintaxis clara y legible, lo que lo hace perfecto para principiantes.
 
                 <p class="mt-3">Se utiliza en campos como desarrollo web, ciencia de datos, inteligencia artificial y automatización.</p>`,
@@ -138,7 +233,7 @@
             },
             {
                 id: 1,
-                title: "Variables y Asignación",
+                title: "1. Variables y Asignación",
                 explanation: `Una variable es un nombre que se refiere a un valor en la memoria de la computadora. Es como una etiqueta que le pones a una caja para saber qué contiene.
 
                 <p class="mt-3">Para asignar un valor, usamos el signo igual: <code>nombre_variable = valor</code>.</p>`,
@@ -162,7 +257,7 @@
             },
             {
                 id: 2,
-                title: "Tipos de Datos: String e Impresión",
+                title: "2. Tipos de Datos: String e Impresión",
                 explanation: `Una 'string' (cadena de texto) es una secuencia de caracteres, y siempre se encierra entre comillas (simples o dobles).
 
                 <p class="mt-3">La función <code>print()</code> se usa para mostrar texto o el valor de una variable en la consola. Puedes concatenar (unir) strings con el operador <code>+</code>.</p>`,
@@ -195,7 +290,7 @@
             },
             {
                 id: 3,
-                title: "Estructuras de Control: Condicionales (if/else)",
+                title: "3. Estructuras de Control: Condicionales (if/else)",
                 explanation: `Las estructuras condicionales (<code>if</code>, <code>elif</code>, <code>else</code>) permiten que el programa tome decisiones. El bloque de código bajo un 'if' solo se ejecuta si la condición es verdadera (True).
 
                 <p class="mt-3">¡Recuerda la indentación y los dos puntos (:)!</p>`,
@@ -224,7 +319,7 @@
             },
             {
                 id: 4,
-                title: "Operaciones Aritméticas",
+                title: "4. Operaciones Aritméticas",
                 explanation: `Python soporta las operaciones matemáticas básicas: suma (<code>+</code>), resta (<code>-</code>), multiplicación (<code>*</code>), división (<code>/</code>), y módulo (<code>%</code>, para obtener el residuo).
 
                 <p class="mt-3">La jerarquía de operaciones se respeta (PEMDAS/BODMAS). Usa paréntesis para forzar un orden específico.</p>`,
@@ -254,7 +349,7 @@
             },
             {
                 id: 5,
-                title: "Estructuras de Control: Bucle for",
+                title: "5. Estructuras de Control: Bucle for",
                 explanation: `El bucle <code>for</code> se utiliza para iterar sobre una secuencia (como una lista o un rango). Es ideal para repetir una tarea un número conocido de veces.
 
                 <p class="mt-3">La función <code>range(n)</code> genera una secuencia de números desde 0 hasta **n-1**.</p>`,
@@ -276,10 +371,9 @@
                     };
                 }
             },
-            // --- MÓDULOS NUEVOS PARA COMPLETAR A 10 ---
             {
                 id: 6,
-                title: "Colecciones: Listas",
+                title: "6. Colecciones: Listas",
                 explanation: `Las listas son una colección ordenada y modificable de ítems. Se definen con corchetes (<code>[]</code>) y pueden contener diferentes tipos de datos.
 
                 <p class="mt-3">Accedes a los elementos mediante su índice (posición), que empieza en 0.</p>`,
@@ -309,7 +403,7 @@
             },
             {
                 id: 7,
-                title: "Estructuras de Control: Bucle while",
+                title: "7. Estructuras de Control: Bucle while",
                 explanation: `El bucle <code>while</code> repite un bloque de código **mientras** una condición sea verdadera. Es importante incluir una manera de que la condición se vuelva falsa para evitar un bucle infinito.
 
                 <p class="mt-3">A menudo se usa para tareas que necesitan repetirse hasta que se cumpla un criterio desconocido.</p>`,
@@ -347,7 +441,7 @@
             },
             {
                 id: 8,
-                title: "Modularidad: Funciones",
+                title: "8. Modularidad: Funciones",
                 explanation: `Una función es un bloque de código reutilizable que solo se ejecuta cuando se llama. Las funciones ayudan a organizar el código y evitar la repetición.
 
                 <p class="mt-3">Se definen con la palabra clave <code>def</code>. Para ejecutarlas, las llamas por su nombre seguido de paréntesis (ej. <code>mi_funcion()</code>).</p>`,
@@ -382,7 +476,7 @@
             },
             {
                 id: 9,
-                title: "Robustez: Manejo de Errores",
+                title: "9. Robustez: Manejo de Errores",
                 explanation: `El manejo de errores (o excepciones) con <code>try</code> y <code>except</code> permite que tu programa continúe ejecutándose incluso si ocurre un error previsible.
 
                 <p class="mt-3">El código riesgoso va en el bloque <code>try</code>, y la respuesta al error específico (como <code>ZeroDivisionError</code>) va en <code>except</code>.</p>`,
@@ -431,15 +525,18 @@
                     
                     if (isPreviousCompleted) {
                         // Desbloqueado: se puede hacer clic
-                        navItem.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-red-100');
-                        navItem.classList.add('hover:bg-indigo-100');
-                        navItem.innerHTML = `${index}. ${scenario.title}`;
+                        navItem.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-red-900/50');
+                        navItem.classList.add('hover:bg-white/10');
+                        navItem.innerHTML = `<span class="text-white">${scenario.title}</span>`;
                     } else {
                         // Bloqueado: no se puede hacer clic, icono de candado
                         navItem.classList.add('opacity-50', 'cursor-not-allowed');
-                        navItem.classList.remove('hover:bg-indigo-100');
-                        navItem.innerHTML = `<span class="mr-1" title="Unidad Bloqueada">&#128274;</span> ${index}. ${scenario.title}`;
+                        navItem.classList.remove('hover:bg-white/10');
+                        navItem.innerHTML = `<span class="mr-1" title="Unidad Bloqueada">&#128274;</span> ${scenario.title}`;
                     }
+                } else {
+                    // Unidad 0 siempre disponible y con el formato limpio
+                    navItem.innerHTML = `<span class="text-white">${scenario.title}</span>`;
                 }
             });
         }
@@ -448,7 +545,6 @@
         // Función para cargar el escenario actual
         function loadScenario(index) {
             
-            // FIX: Declarar las variables al inicio para que estén disponibles en todo el alcance de la función.
             const resultsArea = document.getElementById('results-area');
             const feedbackMessage = document.getElementById('feedback-message');
             const nextButton = document.getElementById('next-button');
@@ -460,9 +556,9 @@
                 const lastCompletedIndex = completionStatus.lastIndexOf(true);
                 const goToIndex = lastCompletedIndex === -1 ? 0 : lastCompletedIndex;
 
-                // Muestra un mensaje de bloqueo
-                resultsArea.classList.remove('hidden', 'bg-green-100', 'border-green-500', 'text-green-700');
-                resultsArea.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+                // Muestra un mensaje de bloqueo con el estilo de error
+                resultsArea.classList.remove('hidden', 'feedback-success');
+                resultsArea.classList.add('feedback-error');
                 feedbackMessage.textContent = "¡Unidad Bloqueada! Debes completar el escenario anterior para acceder a este tema.";
                 nextButton.classList.add('hidden');
                 consoleOutputContainer.classList.add('hidden'); // Ocultar consola en bloqueo
@@ -519,8 +615,8 @@
 
             // 5. Si la unidad ya fue completada, mostrar el botón de siguiente y la salida simulada
             if (completionStatus[index]) {
-                resultsArea.classList.remove('hidden', 'bg-red-100', 'border-red-500', 'text-red-700');
-                resultsArea.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                resultsArea.classList.remove('hidden', 'feedback-error');
+                resultsArea.classList.add('feedback-success');
                 feedbackMessage.textContent = "¡Ya has completado este escenario! Puedes pasar al siguiente.";
                 nextButton.classList.remove('hidden');
                 
@@ -554,8 +650,8 @@
 
             if (validationResult.success) {
                 // Éxito
-                resultsArea.classList.remove('bg-red-100', 'border-red-500', 'text-red-700');
-                resultsArea.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                resultsArea.classList.remove('feedback-error');
+                resultsArea.classList.add('feedback-success');
                 
                 // Mostrar salida simulada de la consola
                 if (validationResult.consoleOutput) {
@@ -577,11 +673,10 @@
 
             } else {
                 // Error
-                resultsArea.classList.remove('bg-green-100', 'border-green-500', 'text-green-700');
-                resultsArea.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+                resultsArea.classList.remove('feedback-success');
+                resultsArea.classList.add('feedback-error');
 
                 // Mostrar el feedback del error en el área de la consola
-                // NOTA: Se mantiene el feedback en la consola para errores de validación.
                 consoleOutputEl.textContent = `ERROR de Validación:\n${validationResult.feedback}`;
             }
         }
@@ -590,15 +685,14 @@
         function loadNextScenario() {
             const nextIndex = currentScenarioIndex + 1;
             if (nextIndex < SCENARIOS.length) {
-                // Ya se validó en runCode que la unidad actual esté completa.
                 loadScenario(nextIndex);
             } else {
                 // Fin de los escenarios
                 const resultsArea = document.getElementById('results-area');
                 const feedbackMessage = document.getElementById('feedback-message');
                 
-                resultsArea.classList.remove('hidden', 'bg-red-100', 'border-red-500', 'text-red-700');
-                resultsArea.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                resultsArea.classList.remove('hidden', 'feedback-error');
+                resultsArea.classList.add('feedback-success');
                 feedbackMessage.textContent = "¡Felicidades! Has completado todos los escenarios iniciales.";
                 document.getElementById('next-button').classList.add('hidden');
                 document.getElementById('console-output-container').classList.add('hidden');
@@ -613,12 +707,23 @@
             // Intenta cargar desde localStorage si existe, sino inicializa a falso.
             const storedCompletionStatus = localStorage.getItem('completionStatus');
             if (storedCompletionStatus) {
-                completionStatus = JSON.parse(storedCompletionStatus);
+                // Se usa el try-catch para manejar errores de JSON.parse
+                try {
+                    completionStatus = JSON.parse(storedCompletionStatus);
+                    // Asegurar que el array tenga la longitud correcta si se agregaron nuevos escenarios
+                    while (completionStatus.length < SCENARIOS.length) {
+                        completionStatus.push(false);
+                    }
+                } catch (e) {
+                    console.error("Error al parsear completionStatus, reiniciando.", e);
+                    completionStatus = new Array(SCENARIOS.length).fill(false);
+                }
             } else {
                 completionStatus = new Array(SCENARIOS.length).fill(false);
-                // El primer escenario (Introducción) siempre se considera completado.
-                completionStatus[0] = true; 
             }
+
+            // El primer escenario (Introducción) siempre se considera completado.
+            completionStatus[0] = true; 
 
             // Guardar el estado de completado cada vez que se actualiza (ejemplo: en runCode)
             // Agregaremos un listener para guardar el estado antes de la descarga de la página.
@@ -634,10 +739,14 @@
                 const a = document.createElement('a');
                 a.id = `nav-item-${index}`;
                 a.href = "#";
-                a.textContent = `${index}. ${scenario.title}`;
-                a.className = "nav-item block p-2 rounded-lg text-gray-700 transition duration-150 cursor-pointer";
+                a.textContent = scenario.title;
+                a.className = "nav-item block transition duration-150 cursor-pointer";
                 a.onclick = (e) => {
                     e.preventDefault();
+                    // Impedir el clic si está bloqueado, excepto para la unidad 0
+                    if (index > 0 && !completionStatus[index - 1]) {
+                        return;
+                    }
                     loadScenario(index);
                 };
                 li.appendChild(a);
@@ -647,8 +756,18 @@
             // Actualizar el estado inicial de bloqueo antes de cargar
             updateSidebarLockStatus();
 
-            // Cargar el primer escenario al inicio
-            loadScenario(0);
+            // Determinar qué escenario cargar al inicio (el último completado o el siguiente)
+            let initialIndex = 0;
+            for (let i = 0; i < completionStatus.length; i++) {
+                if (completionStatus[i]) {
+                    initialIndex = i;
+                } else {
+                    // Cargar el primer escenario sin completar
+                    initialIndex = i;
+                    break;
+                }
+            }
+            loadScenario(initialIndex);
         }
 
         // Iniciar la aplicación al cargar la página
