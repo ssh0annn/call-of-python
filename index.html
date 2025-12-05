@@ -88,6 +88,13 @@
                 <!-- Área de Resultados y Retroalimentación -->
                 <div id="results-area" class="mt-6 p-4 rounded-lg hidden" role="alert">
                     <p id="feedback-message" class="font-medium"></p>
+                    
+                    <!-- NUEVO: Contenedor para la salida de la consola -->
+                    <div id="console-output-container" class="mt-3 p-4 rounded-lg bg-gray-800 text-gray-200 text-sm overflow-auto max-h-40">
+                        <strong class="text-indigo-400">Salida de la Consola:</strong>
+                        <pre id="console-output" class="mt-1 font-mono whitespace-pre-wrap"></pre>
+                    </div>
+
                     <button id="next-button" onclick="loadNextScenario()" class="hidden mt-4 px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
                         Siguiente Unidad &rarr;
                     </button>
@@ -108,8 +115,7 @@
         
         let currentScenarioIndex = 0;
         
-        // Nuevo: Array para rastrear qué escenarios han sido completados
-        // Inicializado con todos en false.
+        // Array para rastrear qué escenarios han sido completados
         let completionStatus; 
 
         // Definición de los escenarios de aprendizaje
@@ -123,7 +129,11 @@
                 task: "No hay ejercicio en esta unidad. Presiona 'Siguiente Unidad' para comenzar.",
                 validation: (code) => {
                     // La unidad de introducción siempre se considera completada con el botón "Siguiente Unidad"
-                    return { success: true, feedback: "¡Bienvenido! Es hora de empezar a programar." };
+                    return { 
+                        success: true, 
+                        feedback: "¡Bienvenido! Es hora de empezar a programar.",
+                        consoleOutput: "Iniciando el curso de Python..." 
+                    };
                 }
             },
             {
@@ -143,7 +153,11 @@
                     if (!regex.test(normalizedCode)) {
                         return { success: false, feedback: "Asegúrate de que la variable se llame exactamente 'puntuacion' y el valor sea el número '95'. Revisa la ortografía." };
                     }
-                    return { success: true, feedback: "¡Excelente! La variable 'puntuacion' ha sido declarada y asignada correctamente." };
+                    return { 
+                        success: true, 
+                        feedback: "¡Excelente! La variable 'puntuacion' ha sido declarada y asignada correctamente.",
+                        consoleOutput: "La variable 'puntuacion' ha sido establecida a 95."
+                    };
                 }
             },
             {
@@ -171,7 +185,12 @@
                         return { success: false, feedback: "Asegúrate de usar la función 'print(saludo + nombre)' para concatenar e imprimir las variables." };
                     }
 
-                    return { success: true, feedback: "¡Correcto! Has usado variables de tipo string y la función 'print' para concatenarlas." };
+                    return { 
+                        success: true, 
+                        feedback: "¡Correcto! Has usado variables de tipo string y la función 'print' para concatenarlas.",
+                        // Salida simulada de la consola
+                        consoleOutput: "Hola Mundo" 
+                    };
                 }
             },
             {
@@ -182,8 +201,6 @@
                 <p class="mt-3">¡Recuerda la indentación y los dos puntos (:)!</p>`,
                 task: "Dado que ya existe la variable `numero = 15`. Escribe una estructura `if` que imprima **'El número es grande'** si `numero` es mayor que 10, y un `else` que imprima **'El número es pequeño'** en caso contrario.",
                 validation: (code) => {
-                    // Simulación del entorno: inyectar la variable inicial
-                    const fullCode = "numero = 15\n" + code;
                     const result = { success: false, feedback: "" };
 
                     // 1. Verificar la estructura del if/else
@@ -196,12 +213,13 @@
                         result.feedback = "El bloque 'else' es incorrecto o no imprime el mensaje exacto: 'El número es pequeño'.";
                         return result;
                     }
-
-                    // 2. Simulación de la lógica (ejecutar 'numero = 15')
-                    // Dado que 15 > 10 es True, el resultado esperado es 'El número es grande'.
-                    // Aquí, simplemente validamos la estructura, ya que la simulación real de la ejecución es compleja.
                     
-                    return { success: true, feedback: "¡Fantástico! Has implementado el condicional 'if/else' correctamente. El programa habría impreso 'El número es grande'." };
+                    return { 
+                        success: true, 
+                        feedback: "¡Fantástico! Has implementado el condicional 'if/else' correctamente.",
+                        // Salida simulada de la consola (dado que numero=15)
+                        consoleOutput: "El número es grande"
+                    };
                 }
             }
         ];
@@ -248,6 +266,7 @@
                 resultsArea.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
                 feedbackMessage.textContent = "¡Unidad Bloqueada! Debes completar el escenario anterior para acceder a este tema.";
                 document.getElementById('next-button').classList.add('hidden');
+                document.getElementById('console-output-container').classList.add('hidden'); // Ocultar consola en bloqueo
 
                 // Si se intentó navegar directamente a una unidad bloqueada, volvemos a la última completada.
                 if (index !== currentScenarioIndex) {
@@ -286,19 +305,28 @@
                 runButton.classList.add('hidden');
             }
             
-            // 4. Limpiar Resultados
+            // 4. Limpiar Resultados y Consola
             const resultsArea = document.getElementById('results-area');
             const nextButton = document.getElementById('next-button');
+            const consoleOutputContainer = document.getElementById('console-output-container');
 
             resultsArea.classList.add('hidden');
             nextButton.classList.add('hidden');
+            consoleOutputContainer.classList.add('hidden');
 
-            // 5. Si la unidad ya fue completada, mostrar el botón de siguiente
+
+            // 5. Si la unidad ya fue completada, mostrar el botón de siguiente y la salida simulada
             if (completionStatus[index]) {
                 resultsArea.classList.remove('hidden', 'bg-red-100', 'border-red-500', 'text-red-700');
                 resultsArea.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
                 feedbackMessage.textContent = "¡Ya has completado este escenario! Puedes pasar al siguiente.";
                 nextButton.classList.remove('hidden');
+                
+                // Mostrar la salida simulada de la consola si existe
+                if (SCENARIOS[index].validation({}).consoleOutput) {
+                    document.getElementById('console-output').textContent = SCENARIOS[index].validation({}).consoleOutput;
+                    consoleOutputContainer.classList.remove('hidden');
+                }
             }
         }
 
@@ -309,6 +337,8 @@
             const resultsArea = document.getElementById('results-area');
             const feedbackMessage = document.getElementById('feedback-message');
             const nextButton = document.getElementById('next-button');
+            const consoleOutputContainer = document.getElementById('console-output-container');
+            const consoleOutputEl = document.getElementById('console-output');
 
             // Validar el código usando la función específica del escenario
             const validationResult = scenario.validation(code);
@@ -316,13 +346,21 @@
             resultsArea.classList.remove('hidden');
             feedbackMessage.textContent = validationResult.feedback;
             nextButton.classList.add('hidden'); // Ocultar por defecto
+            consoleOutputContainer.classList.remove('hidden'); // Mostrar el contenedor de la consola
 
             if (validationResult.success) {
                 // Éxito
                 resultsArea.classList.remove('bg-red-100', 'border-red-500', 'text-red-700');
                 resultsArea.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
                 
-                // Nuevo: Marcar el escenario como completado y actualizar la interfaz
+                // Mostrar salida simulada de la consola
+                if (validationResult.consoleOutput) {
+                    consoleOutputEl.textContent = validationResult.consoleOutput;
+                } else {
+                    consoleOutputEl.textContent = "El código se ejecutó correctamente. No se detectó salida en la consola.";
+                }
+                
+                // Marcar el escenario como completado y actualizar la interfaz
                 completionStatus[currentScenarioIndex] = true;
                 updateSidebarLockStatus();
 
@@ -337,6 +375,9 @@
                 // Error
                 resultsArea.classList.remove('bg-green-100', 'border-green-500', 'text-green-700');
                 resultsArea.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+
+                // Mostrar el feedback del error en el área de la consola
+                consoleOutputEl.textContent = `ERROR de Validación:\n${validationResult.feedback}`;
             }
         }
 
@@ -348,7 +389,6 @@
                 loadScenario(nextIndex);
             } else {
                 // Fin de los escenarios
-                // En lugar de alert, usamos el área de resultados
                 const resultsArea = document.getElementById('results-area');
                 const feedbackMessage = document.getElementById('feedback-message');
                 
@@ -356,9 +396,7 @@
                 resultsArea.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
                 feedbackMessage.textContent = "¡Felicidades! Has completado todos los escenarios iniciales.";
                 document.getElementById('next-button').classList.add('hidden');
-
-                // Opcional: Podrías volver a la introducción o mantener el estado.
-                // loadScenario(0); 
+                document.getElementById('console-output-container').classList.add('hidden');
             }
         }
 
