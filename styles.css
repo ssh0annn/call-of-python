@@ -87,3 +87,116 @@ code {
     background-color: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.5);
 }
+<style>
+        /* Paleta de colores inspirada en el tema oscuro y morado/índigo */
+        :root {
+            --color-bg-dark: #1e1231; /* Morado/Índigo muy oscuro */
+            --color-primary: #8b5cf6; /* Ígdigo medio (Púrpura) */
+            --color-secondary: #c4b5fd; /* Ígdigo claro */
+            --color-text-light: #f3f4f6;
+            --color-text-dark: #1f2937;
+        }
+
+        /* Fondo degradado oscuro */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--color-bg-dark) 0%, #3e1f75 100%);
+            color: var(--color-text-light);
+            min-height: 100vh;
+        }
+
+        /* Estilo Glassmorphism para los contenedores principales (simulando los paneles flotantes) */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.1); /* Blanco semitransparente */
+            backdrop-filter: blur(10px); /* Desenfoque */
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Estilo para el editor de código: debe ser legible y contrastar */
+        .code-editor {
+            font-family: monospace;
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo más oscuro para código */
+            color: #4CAF50; /* Texto verde neon para código (contraste alto) */
+            padding: 1rem;
+            border-radius: 12px;
+            resize: none;
+            min-height: 200px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s;
+        }
+
+        /* Resaltar el tema actual en el sidebar */
+        .nav-item {
+            color: var(--color-text-light);
+            padding: 0.75rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item.active {
+            background: var(--color-primary);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Estilo para el texto de código en las explicaciones */
+        code {
+            background-color: rgba(139, 92, 246, 0.2); /* Fondo púrpura suave */
+            color: var(--color-secondary);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Ajustes de color de texto para las secciones de contenido */
+        #topic-title, #task-description, #theory-section, .text-content {
+            color: var(--color-text-light);
+        }
+
+        /* Estilo para los botones */
+        .custom-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .run-button {
+            background-color: #22c55e; /* Verde brillante */
+            color: white;
+        }
+        .run-button:hover {
+            background-color: #16a34a; /* Verde oscuro */
+            transform: translateY(-2px);
+        }
+
+        .next-button {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        .next-button:hover {
+            background-color: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        /* Estilos para el área de resultados (feedback) */
+        .feedback-success {
+            background-color: rgba(34, 197, 94, 0.2); /* Verde semitransparente */
+            border-left: 4px solid #16a34a;
+            color: #bbf7d0; /* Texto verde muy claro */
+        }
+        .feedback-error {
+            background-color: rgba(239, 68, 68, 0.2); /* Rojo semitransparente */
+            border-left: 4px solid #dc2626;
+            color: #fca5a5; /* Texto rojo muy claro */
+        }
+   
