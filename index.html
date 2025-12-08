@@ -1,80 +1,790 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aprende Python Interactivo</title>
-
-    <!-- Tailwind -->
+    <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Fuente -->
+    <!-- Carga de la fuente Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Paleta de colores inspirada en el tema oscuro y morado/índigo */
+        :root {
+            --color-bg-dark: #1e1231; /* Morado/Índigo muy oscuro */
+            --color-primary: #8b5cf6; /* Ígdigo medio (Púrpura) */
+            --color-secondary: #c4b5fd; /* Ígdigo claro */
+            --color-text-light: #f3f4f6;
+            --color-text-dark: #1f2937;
+            /* Nuevos colores base para feedback */
+            --color-success-base: #10b981; /* Esmeralda/Verde */
+            --color-error-base: #ef4444; /* Rojo */
+        }
 
-    <!-- CSS externo -->
-    <link rel="stylesheet" href="style.css">
+        /* Fondo degradado oscuro */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--color-bg-dark) 0%, #3e1f75 100%);
+            color: var(--color-text-light);
+            min-height: 100vh;
+        }
+
+        /* Estilo Glassmorphism para los contenedores principales (simulando los paneles flotantes) */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.1); /* Blanco semitransparente */
+            backdrop-filter: blur(10px); /* Desenfoque */
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Estilo para el editor de código: debe ser legible y contrastar */
+        .code-editor {
+            font-family: monospace;
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo más oscuro para código */
+            color: #4CAF50; /* Texto verde neon para código (contraste alto) */
+            padding: 1rem;
+            border-radius: 12px;
+            resize: none;
+            min-height: 200px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s;
+        }
+
+        /* Resaltar el tema actual en el sidebar */
+        .nav-item {
+            color: var(--color-text-light);
+            padding: 0.75rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item.active {
+            background: var(--color-primary);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Estilo para el texto de código en las explicaciones */
+        code {
+            background-color: rgba(139, 92, 246, 0.2); /* Fondo púrpura suave */
+            color: var(--color-secondary);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Ajustes de color de texto para las secciones de contenido */
+        #topic-title, #task-description, #theory-section, .text-content {
+            color: var(--color-text-light);
+        }
+
+        /* Estilo para los botones */
+        .custom-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .run-button {
+            background-color: var(--color-success-base); /* Verde brillante */
+            color: var(--color-text-dark);
+        }
+        .run-button:hover {
+            background-color: #059669; /* Verde oscuro */
+            transform: translateY(-2px);
+        }
+
+        .next-button {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        .next-button:hover {
+            background-color: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        /* ------------------------------------------
+        ESTILOS PARA EL ÁREA DE RESULTADOS (Glassmorphism)
+        ------------------------------------------
+        */
+        .feedback-success {
+            /* Fondo ligeramente verde y semitransparente, mezclado con el fondo oscuro */
+            background-color: rgba(16, 185, 129, 0.1); /* Verde esmeralda (10%) */
+            border: 1px solid rgba(16, 185, 129, 0.5); /* Borde suave de color éxito */
+            color: var(--color-secondary); /* Texto púrpura claro */
+            backdrop-filter: blur(5px);
+        }
+        .feedback-error {
+            /* Fondo ligeramente rojo y semitransparente */
+            background-color: rgba(239, 68, 68, 0.1); /* Rojo (10%) */
+            border: 1px solid rgba(239, 68, 68, 0.5); /* Borde suave de color error */
+            color: var(--color-secondary); /* Texto púrpura claro */
+            backdrop-filter: blur(5px);
+        }
+    </style>
 </head>
 <body class="flex flex-col">
 
-<header class="p-4 sticky top-0 z-10 glass-panel shadow-2xl">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-white tracking-wider">
-            <span style="color: var(--color-primary);">CALL OF PYTHON 🐍</span> 
-        </h1>
-        <span class="text-sm text-gray-300 hidden sm:block">Conceptos Esenciales</span>
-    </div>
-</header>
-
-<div class="flex flex-1 max-w-7xl mx-auto w-full p-4 md:p-8">
-
-    <nav id="sidebar" class="w-64 p-4 mr-6 glass-panel hidden md:block self-start">
-        <h2 class="text-xl font-semibold mb-4 text-white border-b border-gray-600 pb-2">Unidades</h2>
-        <ul id="unit-list"></ul>
-    </nav>
-
-    <main class="flex-1">
-        <div id="content-area" class="p-6 md:p-8 glass-panel shadow-2xl">
-
-            <h2 id="topic-title" class="text-3xl font-extrabold text-white mb-4 border-b border-gray-600 pb-2"></h2>
-
-            <section id="theory-section" class="mb-8 text-content leading-relaxed text-lg"></section>
-
-            <section id="scenario-section" class="p-6 rounded-xl border border-dashed border-gray-500 bg-black/20">
-                <h3 class="text-2xl font-semibold text-white mb-4">Escenario de Práctica</h3>
-                <p id="task-description" class="mb-4 text-content"></p>
-
-                <textarea id="code-editor" class="code-editor w-full" placeholder="# Escribe tu código Python aquí..."></textarea>
-
-                <button id="run-button" class="custom-button run-button mt-4">
-                    Ejecutar / Verificar
-                </button>
-            </section>
-
-            <div id="results-area" class="mt-6 p-4 rounded-xl hidden" role="alert">
-                <p id="feedback-message" class="font-medium text-lg"></p>
-
-                <div id="console-output-container" class="mt-3 p-4 rounded-lg bg-black/50 text-green-400 text-sm overflow-auto max-h-40">
-                    <strong class="text-white">Salida de la Consola:</strong>
-                    <pre id="console-output" class="mt-1 font-mono whitespace-pre-wrap"></pre>
-                </div>
-
-                <button id="next-button" class="custom-button next-button hidden mt-4">
-                    Siguiente Unidad &rarr;
-                </button>
-            </div>
-
+    <!-- Encabezado (Header) - Fijo y con Glassmorphism suave -->
+    <header class="p-4 sticky top-0 z-10 glass-panel shadow-2xl">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-white tracking-wider">
+                <span style="color: var(--color-primary);">PYTHON</span> INMERSIVO
+            </h1>
+            <span class="text-sm text-gray-300 hidden sm:block">Conceptos Esenciales</span>
         </div>
-    </main>
+    </header>
 
-</div>
+    <!-- Contenedor Principal (Sidebar y Contenido) -->
+    <div class="flex flex-1 max-w-7xl mx-auto w-full p-4 md:p-8">
 
-<footer class="bg-black/30 p-4 mt-auto w-full">
-    <div class="max-w-7xl mx-auto text-center text-sm text-gray-400">
-        &copy; 2024 Proyecto de Aprendizaje Interactivo.
+        <!-- Navegación (Sidebar) - Contenedor Flotante -->
+        <nav id="sidebar" class="w-64 p-4 mr-6 glass-panel hidden md:block self-start">
+            <h2 class="text-xl font-semibold mb-4 text-white border-b border-gray-600 pb-2">Unidades</h2>
+            <ul id="unit-list">
+                <!-- Los ítems de las unidades se inyectarán aquí por JavaScript -->
+            </ul>
+        </nav>
+
+        <!-- Área de Contenido Principal - Contenedor Flotante -->
+        <main class="flex-1">
+            <div id="content-area" class="p-6 md:p-8 glass-panel shadow-2xl">
+                
+                <!-- Título del Tema -->
+                <h2 id="topic-title" class="text-3xl font-extrabold text-white mb-4 border-b border-gray-600 pb-2"></h2>
+
+                <!-- Explicación Teórica -->
+                <section id="theory-section" class="mb-8 text-content leading-relaxed text-lg"></section>
+
+                <!-- Escenario Dinámico (Problema y Editor) -->
+                <section id="scenario-section" class="p-6 rounded-xl border border-dashed border-gray-500 bg-black/20">
+                    <h3 class="text-2xl font-semibold text-white mb-4">Escenario de Práctica</h3>
+                    <p id="task-description" class="mb-4 text-content"></p>
+
+                    <!-- Editor de Código -->
+                    <textarea id="code-editor" class="code-editor w-full focus:ring-var(--color-primary) focus:border-var(--color-primary)" placeholder="# Escribe tu código Python aquí..."></textarea>
+
+                    <!-- Botón de Ejecutar -->
+                    <button id="run-button" onclick="runCode()" class="custom-button run-button mt-4">
+                        Ejecutar / Verificar
+                    </button>
+                </section>
+
+                <!-- Área de Resultados y Retroalimentación -->
+                <div id="results-area" class="mt-6 p-4 rounded-xl hidden" role="alert">
+                    <p id="feedback-message" class="font-medium text-lg"></p>
+                    
+                    <!-- Contenedor para la salida de la consola -->
+                    <div id="console-output-container" class="mt-3 p-4 rounded-lg bg-black/50 text-green-400 text-sm overflow-auto max-h-40">
+                        <strong class="text-white">Salida de la Consola:</strong>
+                        <pre id="console-output" class="mt-1 font-mono whitespace-pre-wrap"></pre>
+                    </div>
+
+                    <button id="next-button" onclick="loadNextScenario()" class="custom-button next-button hidden mt-4">
+                        Siguiente Unidad &rarr;
+                    </button>
+                </div>
+            </div>
+        </main>
     </div>
-</footer>
 
-<!-- JavaScript externo -->
-<script src="app.js"></script>
+    <!-- Pie de Página (Footer) -->
+    <footer class="bg-black/30 p-4 mt-auto w-full">
+        <div class="max-w-7xl mx-auto text-center text-sm text-gray-400">
+            &copy; 2024 Proyecto de Aprendizaje Interactivo.
+        </div>
+    </footer>
+
+    <script>
+        // Función auxiliar para normalizar el código: elimina comentarios y espacios.
+        function normalizeCode(code) {
+            // 1. Remover líneas de comentarios
+            const codeWithoutComments = code.split('\n')
+                .filter(line => !line.trim().startsWith('#'))
+                .join(' ');
+            
+            // 2. Simplificar múltiples espacios a uno solo y remover espacios iniciales/finales
+            // Luego, remover espacios completamente para comparaciones estrictas de sintaxis (ej: 'a=1' vs 'a = 1')
+            return codeWithoutComments.replace(/\s+/g, ' ').trim().replace(/\s/g, '').toLowerCase();
+        }
+
+        let currentScenarioIndex = 0;
+        let completionStatus; 
+
+        // Definición de los escenarios de aprendizaje
+        const SCENARIOS = [
+            {
+                id: 0,
+                title: "0. Introducción a Python",
+                explanation: `Python es uno de los lenguajes de programación más populares del mundo. Es conocido por su sintaxis clara y legible, lo que lo hace perfecto para principiantes.
+
+                <p class="mt-3">Se utiliza en campos como desarrollo web, ciencia de datos, inteligencia artificial y automatización.</p>
+                
+                [Image of Python logo]`,
+                task: "No hay ejercicio en esta unidad. Presiona 'Siguiente Unidad' para comenzar.",
+                validation: (code) => {
+                    return { 
+                        success: true, 
+                        feedback: "¡Bienvenido! Es hora de empezar a programar.",
+                        consoleOutput: "Iniciando el curso de Python..." 
+                    };
+                }
+            },
+            {
+                id: 1,
+                title: "1. Variables y Asignación",
+                explanation: `Una variable es un nombre que se refiere a un valor en la memoria de la computadora. Es como una etiqueta que le pones a una caja para saber qué contiene.
+
+                <p class="mt-3">Para asignar un valor, usamos el signo igual: <code>nombre_variable = valor</code>.</p>`,
+                task: "Crea una variable llamada **'puntuacion'** y asígnale el valor entero **95**.",
+                validation: (code) => {
+                    const normalized = normalizeCode(code);
+                    
+                    // Regex flexible: busca 'puntuacion' seguida de '=' y '95'
+                    // Esto permite 'puntuacion=95', 'puntuacion = 95', 'puntuacion= 95', etc.
+                    const regex = /puntuacion=95/;
+
+                    if (!regex.test(normalized)) {
+                        return { success: false, feedback: "Asegúrate de que la variable se llame **'puntuacion'** y el valor sea el **número 95**. (ejemplo: `puntuacion = 95`)" };
+                    }
+                    return { 
+                        success: true, 
+                        feedback: "¡Excelente! La variable 'puntuacion' ha sido declarada y asignada correctamente.",
+                        consoleOutput: "La variable 'puntuacion' ha sido establecida a 95."
+                    };
+                }
+            },
+            {
+                id: 2,
+                title: "2. Tipos de Datos: String e Impresión",
+                explanation: `Una 'string' (cadena de texto) es una secuencia de caracteres, y siempre se encierra entre comillas (simples o dobles).
+
+                <p class="mt-3">La función <code>print()</code> se usa para mostrar texto o el valor de una variable en la consola. Puedes concatenar (unir) strings con el operador <code>+</code>.</p>`,
+                task: "Declara una variable **'saludo'** con el valor 'Hola ' (con un espacio final) y otra **'nombre'** con tu nombre. Luego, imprime la concatenación de ambas variables.",
+                validation: (code) => {
+                    const normalized = normalizeCode(code);
+                    
+                    // 1. Declaración de saludo flexible (permite comillas simples o dobles y variaciones de espacios)
+                    if (!/saludo=['"]hola['"]\+?/.test(normalized) && !/saludo=['"]hola\s['"]\+?/.test(normalized)) {
+                        return { success: false, feedback: "Falta o es incorrecta la variable 'saludo'. Debe contener 'Hola ' (con un espacio) o 'Hola'." };
+                    }
+
+                    // 2. Declaración de nombre (cualquier string)
+                    if (!/nombre=['"].+['"]/.test(normalized)) {
+                         return { success: false, feedback: "Falta o es incorrecta la variable 'nombre'. Asegúrate de que tenga un valor de string (ej. 'Mundo')." };
+                    }
+
+                    // 3. Uso de print() con la concatenación. Usa la versión original del código, ya que normalizeCode rompe la concatenación en el patrón.
+                    // Busca 'print(saludo + nombre)' o 'print(nombre + saludo)'
+                    if (!/print\s*\(\s*saludo\s*\+\s*nombre\s*\)/.test(code.replace(/\s/g, '')) && !/print\s*\(\s*nombre\s*\+\s*saludo\s*\)/.test(code.replace(/\s/g, ''))) {
+                        return { success: false, feedback: "Asegúrate de usar la función 'print(saludo + nombre)' o 'print(nombre + saludo)' para concatenar e imprimir las variables." };
+                    }
+
+                    return { 
+                        success: true, 
+                        feedback: "¡Correcto! Has usado variables de tipo string y la función 'print' para concatenarlas.",
+                        consoleOutput: "Hola Mundo" 
+                    };
+                }
+            },
+            {
+                id: 3,
+                title: "3. Estructuras de Control: Condicionales (if/else)",
+                explanation: `Las estructuras condicionales (<code>if</code>, <code>elif</code>, <code>else</code>) permiten que el programa tome decisiones. El bloque de código bajo un 'if' solo se ejecuta si la condición es verdadera (True).
+
+                <p class="mt-3">¡Recuerda la indentación y los dos puntos (:)!</p>`,
+                task: "Dado que ya existe la variable `numero = 15`. Escribe una estructura `if` que imprima **'El número es grande'** si `numero` es mayor que 10, y un `else` que imprima **'El número es pequeño'** en caso contrario.",
+                validation: (code) => {
+                    const result = { success: false, feedback: "" };
+                    
+                    // Normalización parcial para buscar la estructura, manteniendo espacios y saltos de línea para la indentación
+                    const normalizedStructure = code.replace(/\s+/g, ' ').trim(); 
+
+                    // 1. Verificar la estructura del if (flexible con espacios y comillas)
+                    const ifRegex = /if\s+numero\s*>\s*10\s*:\s*print\s*\(['"]El número es grande['"]\)/s;
+                    if (!ifRegex.test(normalizedStructure)) {
+                        result.feedback = "El bloque 'if' es incorrecto o no imprime el mensaje exacto: **'El número es grande'**. Verifica la condición (`numero > 10`) y la indentación.";
+                        return result;
+                    }
+
+                    // 2. Verificar la estructura del else (flexible con espacios y comillas)
+                    const elseRegex = /else\s*:\s*print\s*\(['"]El número es pequeño['"]\)/s;
+                    if (!elseRegex.test(normalizedStructure)) {
+                        result.feedback = "El bloque 'else' es incorrecto o no imprime el mensaje exacto: **'El número es pequeño'**. Verifica la indentación.";
+                        return result;
+                    }
+                    
+                    return { 
+                        success: true, 
+                        feedback: "¡Fantástico! Has implementado el condicional 'if/else' correctamente.",
+                        consoleOutput: "El número es grande"
+                    };
+                }
+            },
+            {
+                id: 4,
+                title: "4. Operaciones Aritméticas",
+                explanation: `Python soporta las operaciones matemáticas básicas: suma (<code>+</code>), resta (<code>-</code>), multiplicación (<code>*</code>), división (<code>/</code>), y módulo (<code>%</code>, para obtener el residuo).
+
+                <p class="mt-3">La jerarquía de operaciones se respeta (PEMDAS/BODMAS). Usa paréntesis para forzar un orden específico.</p>`,
+                task: "Calcula el resultado de la siguiente expresión: `(20 + 5) * 2`. Almacena el resultado en una variable llamada **'total_calculado'** y luego imprímela.",
+                validation: (code) => {
+                    const result = { success: false, feedback: "" };
+                    const normalized = normalizeCode(code);
+
+                    // 1. Verificar la asignación de la variable y la operación (permite espacios flexibles)
+                    // Buscamos 'total_calculado=' y la operación '((20+5)*2)' con paréntesis
+                    if (!/total_calculado=\(20\+5\)\*2/.test(normalized)) {
+                        result.feedback = "Asegúrate de asignar la variable **'total_calculado'** con la operación exacta `(20 + 5) * 2`. No uses el resultado final, sino la expresión.";
+                        return result;
+                    }
+                    
+                    // 2. Verificar el uso de print (flexible con espacios)
+                    if (!/print\(total_calculado\)/.test(normalized)) {
+                        result.feedback = "Debes usar la función **'print(total_calculado)'** para mostrar el resultado.";
+                        return result;
+                    }
+
+                    return { 
+                        success: true, 
+                        feedback: "¡Cálculo exitoso! El orden de operaciones se aplicó correctamente. El resultado es 50.",
+                        consoleOutput: "50"
+                    };
+                }
+            },
+            {
+                id: 5,
+                title: "5. Estructuras de Control: Bucle for",
+                explanation: `El bucle <code>for</code> se utiliza para iterar sobre una secuencia (como una lista o un rango). Es ideal para repetir una tarea un número conocido de veces.
+
+                <p class="mt-3">La función <code>range(n)</code> genera una secuencia de números desde 0 hasta **n-1**.</p>`,
+                task: "Escribe un bucle `for` que itere 3 veces, usando `range(3)`, e imprima la palabra **'Repetición'** en cada iteración.",
+                validation: (code) => {
+                    const result = { success: false, feedback: "" };
+
+                    // Normalización parcial para buscar la estructura, manteniendo espacios y saltos de línea para la indentación
+                    const normalizedStructure = code.replace(/\s+/g, ' ').trim(); 
+
+                    // 1. Verificar la estructura del bucle for (flexible con el nombre de la variable de iteración y espacios)
+                    // Busca 'for' seguido de un nombre de variable, 'in range(3):', y luego el print indentado.
+                    const forRegex = /for\s+\w+\s+in\s+range\s*\(\s*3\s*\)\s*:\s*print\s*\(['"]Repetición['"]\)/s;
+
+                    if (!forRegex.test(normalizedStructure)) {
+                        result.feedback = "Revisa tu sintaxis. Asegúrate de usar `for`, `range(3)` y la indentación correcta para imprimir **'Repetición'** dentro del bucle.";
+                        return result;
+                    }
+                    
+                    return { 
+                        success: true, 
+                        feedback: "¡Lo tienes! El bucle se ejecutó 3 veces. La iteración es clave en la programación.",
+                        consoleOutput: "Repetición\nRepetición\nRepetición"
+                    };
+                }
+            },
+            {
+                id: 6,
+                title: "6. Colecciones: Listas",
+                explanation: `Las listas son una colección ordenada y modificable de ítems. Se definen con corchetes (<code>[]</code>) y pueden contener diferentes tipos de datos.
+
+                <p class="mt-3">Accedes a los elementos mediante su índice (posición), que empieza en 0.</p>`,
+                task: "Crea una lista llamada **'frutas'** con los elementos **'manzana'**, **'banana'** y **'cereza'**. Luego, imprime el elemento en la segunda posición (índice 1).",
+                validation: (code) => {
+                    const result = { success: false, feedback: "" };
+                    const normalized = normalizeCode(code);
+
+                    // 1. Verificar la creación de la lista (flexible con espacios y comillas)
+                    const listRegex = /frutas=\['?manzana'?,['"]?banana['"]?,['"]?cereza['"]?\]/;
+                    if (!listRegex.test(normalized)) {
+                        result.feedback = "Asegúrate de crear la lista **'frutas'** exactamente con los tres elementos indicados: 'manzana', 'banana' y 'cereza'.";
+                        return result;
+                    }
+
+                    // 2. Verificar la impresión del índice 1 (flexible con espacios)
+                    if (!/print\(frutas\[1\]\)/.test(normalized)) {
+                        result.feedback = "Debes imprimir el elemento en la segunda posición usando **'print(frutas[1])'**.";
+                        return result;
+                    }
+                    
+                    return { 
+                        success: true, 
+                        feedback: "¡Genial! Has creado y accedido correctamente a una lista. El elemento en el índice 1 es 'banana'.",
+                        consoleOutput: "banana"
+                    };
+                }
+            },
+            {
+                id: 7,
+                title: "7. Estructuras de Control: Bucle while",
+                explanation: `El bucle <code>while</code> repite un bloque de código **mientras** una condición sea verdadera. Es importante incluir una manera de que la condición se vuelva falsa para evitar un bucle infinito.
+
+                <p class="mt-3">A menudo se usa para tareas que necesitan repetirse hasta que se cumpla un criterio desconocido.</p>`,
+                task: "Usa un bucle `while` para imprimir los números desde 0 hasta 2 (inclusive). Usa una variable `contador` inicializada a 0 y la condición `contador < 3`. No olvides incrementar el contador.",
+                validation: (code) => {
+                    const result = { success: false, feedback: "" };
+                    const normalized = normalizeCode(code);
+                    const normalizedStructure = code.replace(/\s+/g, ' ').trim(); 
+
+                    // 1. Verificar la inicialización
+                    if (!/contador=0/.test(normalized)) {
+                        result.feedback = "Asegúrate de inicializar la variable **'contador'** a 0.";
+                        return result;
+                    }
+                    
+                    // 2. Verificar la condición while y la impresión
+                    const whilePrintRegex = /while\s+contador\s*<\s*3\s*:\s*print\s*\(\s*contador\s*\)/s;
+                    if (!whilePrintRegex.test(normalizedStructure)) {
+                        result.feedback = "El bucle 'while' es incorrecto. Debe usar la condición **'contador < 3'** e imprimir **'contador'** dentro del bucle.";
+                        return result;
+                    }
+
+                    // 3. Verificar el incremento (corta y larga forma)
+                    if (!/contador=contador\+1/.test(normalized) && !/contador\+=1/.test(normalized)) {
+                        result.feedback = "Debes incrementar el **'contador'** (ej. `contador = contador + 1` o `contador += 1`) dentro del bucle para evitar un bucle infinito.";
+                        return result;
+                    }
+
+                    return { 
+                        success: true, 
+                        feedback: "¡Bucle 'while' dominado! El código imprimió los números 0, 1 y 2, y luego se detuvo.",
+                        consoleOutput: "0\n1\n2"
+                    };
+                }
+            },
+            {
+                id: 8,
+                title: "8. Modularidad: Funciones",
+                explanation: `Una función es un bloque de código reutilizable que solo se ejecuta cuando se llama. Las funciones ayudan a organizar el código y evitar la repetición.
+
+                <p class="mt-3">Se definen con la palabra clave <code>def</code>. Para ejecutarlas, las llamas por su nombre seguido de paréntesis (ej. <code>mi_funcion()</code>).</p>`,
+                task: "Define una función llamada **'saludar'** que tome un argumento `nombre` e imprima el mensaje 'Hola, [nombre]!'. Llama a la función con el nombre **'Ana'**.",
+                validation: (code) => {
+                    const result = { success: false, feedback: "" };
+                    const normalizedStructure = code.replace(/\s+/g, ' ').trim(); 
+
+                    // 1. Verificar la definición de la función (flexible con espacios)
+                    if (!/def\s+saludar\s*\(\s*nombre\s*\)\s*:/.test(normalizedStructure)) {
+                        result.feedback = "Asegúrate de definir la función **'saludar'** con el parámetro **'nombre'** usando la sintaxis `def saludar(nombre):`.";
+                        return result;
+                    }
+                    
+                    // 2. Verificar la impresión con concatenación o f-string (flexible)
+                    // Patrón de print(string + nombre + string) O print(f-string)
+                    const printRegex = /print\s*\(\s*['"]Hola,\s*['"]\s*\+\s*nombre\s*\+\s*['"]!\s*['"]\s*\)/s;
+                    const fstringRegex = /print\s*\(\s*f['"].*nombre.*!\s*['"]\s*\)/s;
+
+                    if (!printRegex.test(normalizedStructure) && !fstringRegex.test(normalizedStructure)) {
+                        result.feedback = "La función debe imprimir el saludo exacto: 'Hola, [nombre]!'. Usa la concatenación o una f-string.";
+                        return result;
+                    }
+
+                    // 3. Verificar la llamada a la función (flexible con espacios y comillas)
+                    if (!/saludar\s*\(\s*['"]Ana['"]\s*\)/.test(normalizedStructure)) {
+                        result.feedback = "Debes llamar a la función usando **'saludar(\"Ana\")'**.";
+                        return result;
+                    }
+
+                    return { 
+                        success: true, 
+                        feedback: "¡Perfecto! Has creado y ejecutado una función con un argumento.",
+                        consoleOutput: "Hola, Ana!"
+                    };
+                }
+            },
+            {
+                id: 9,
+                title: "9. Robustez: Manejo de Errores",
+                explanation: `El manejo de errores (o excepciones) con <code>try</code> y <code>except</code> permite que tu programa continúe ejecutándose incluso si ocurre un error previsible.
+
+                <p class="mt-3">El código riesgoso va en el bloque <code>try</code>, y la respuesta al error específico (como <code>ZeroDivisionError</code>) va en <code>except</code>.</p>`,
+                task: "Escribe un bloque `try` y `except` para manejar una división por cero. En el `try`, intenta dividir **10 / 0**. En el bloque `except ZeroDivisionError`, imprime el mensaje **'Error: División por cero no permitida.'**",
+                validation: (code) => {
+                    const result = { success: false, feedback: "" };
+                    const normalizedStructure = code.replace(/\s+/g, ' ').trim(); 
+                    
+                    // 1. Verificar el bloque try con la división (flexible con espacios)
+                    if (!/try\s*:\s*10\s*\/\s*0/.test(normalizedStructure)) {
+                        result.feedback = "El bloque **'try'** debe contener la operación riesgosa **'10 / 0'**.";
+                        return result;
+                    }
+                    
+                    // 2. Verificar el except con el tipo de error y el print (flexible)
+                    const exceptRegex = /except\s+ZeroDivisionError\s*:\s*print\s*\(['"]Error:\s*División\s*por\s*cero\s*no\s*permitida\.["]\s*\)/s;
+
+                    if (!exceptRegex.test(normalizedStructure)) {
+                        result.feedback = "Debes capturar el error específico usando **'except ZeroDivisionError:'** e imprimir el mensaje exacto: **'Error: División por cero no permitida.'**.";
+                        return result;
+                    }
+
+                    return { 
+                        success: true, 
+                        feedback: "¡Excelente! Has manejado la excepción con éxito. Tu código es más robusto.",
+                        consoleOutput: "Error: División por cero no permitida."
+                    };
+                }
+            }
+        ];
+
+        /**
+         * Función para actualizar el estado de bloqueo visual en el sidebar.
+         * Muestra un candado (🔒) si la unidad anterior no ha sido completada.
+         */
+        function updateSidebarLockStatus() {
+            SCENARIOS.forEach((scenario, index) => {
+                const navItem = document.getElementById(`nav-item-${index}`);
+                
+                // La unidad 0 (Introducción) siempre está disponible.
+                if (index > 0) {
+                    const isPreviousCompleted = completionStatus[index - 1];
+                    
+                    if (isPreviousCompleted) {
+                        // Desbloqueado: se puede hacer clic
+                        navItem.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-red-900/50');
+                        navItem.classList.add('hover:bg-white/10');
+                        navItem.innerHTML = `<span class="text-white">${scenario.title}</span>`;
+                    } else {
+                        // Bloqueado: no se puede hacer clic, icono de candado
+                        navItem.classList.add('opacity-50', 'cursor-not-allowed');
+                        navItem.classList.remove('hover:bg-white/10');
+                        navItem.innerHTML = `<span class="mr-1" title="Unidad Bloqueada">&#128274;</span> ${scenario.title}`;
+                    }
+                } else {
+                    // Unidad 0 siempre disponible y con el formato limpio
+                    navItem.innerHTML = `<span class="text-white">${scenario.title}</span>`;
+                }
+            });
+        }
+
+
+        // Función para cargar el escenario actual
+        function loadScenario(index) {
+            
+            const resultsArea = document.getElementById('results-area');
+            const feedbackMessage = document.getElementById('feedback-message');
+            const nextButton = document.getElementById('next-button');
+            const consoleOutputContainer = document.getElementById('console-output-container');
+            const consoleOutputEl = document.getElementById('console-output');
+
+            // Lógica de Bloqueo: Si el índice es mayor que 0 y el escenario anterior NO está completado
+            if (index > 0 && !completionStatus[index - 1]) {
+                const lastCompletedIndex = completionStatus.lastIndexOf(true);
+                const goToIndex = lastCompletedIndex === -1 ? 0 : lastCompletedIndex;
+
+                // Muestra un mensaje de bloqueo con el estilo de error
+                resultsArea.classList.remove('hidden', 'feedback-success');
+                resultsArea.classList.add('feedback-error');
+                feedbackMessage.textContent = "¡Unidad Bloqueada! Debes completar el escenario anterior para acceder a este tema.";
+                nextButton.classList.add('hidden');
+                consoleOutputContainer.classList.add('hidden'); // Ocultar consola en bloqueo
+
+                // Si se intentó navegar directamente a una unidad bloqueada, volvemos a la última completada.
+                if (index !== currentScenarioIndex) {
+                    loadScenario(goToIndex); 
+                }
+                return;
+            }
+
+            currentScenarioIndex = index;
+            const scenario = SCENARIOS[index];
+
+            // 1. Actualizar Navegación
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(`nav-item-${index}`).classList.add('active');
+
+            // 2. Actualizar Contenido
+            document.getElementById('topic-title').textContent = scenario.title;
+            document.getElementById('theory-section').innerHTML = scenario.explanation;
+            
+            // 3. Actualizar Escenario de Práctica
+            const taskEl = document.getElementById('task-description');
+            const editorEl = document.getElementById('code-editor');
+            const runButton = document.getElementById('run-button');
+
+            if (scenario.task) {
+                taskEl.innerHTML = scenario.task;
+                // Mantener el valor predeterminado si existe, sino limpiarlo
+                editorEl.value = (scenario.id === 3 ? "numero = 15\n# Escribe tu código aquí...\n" : 
+                                  scenario.id === 4 ? "# Escribe tu código aquí...\n" : 
+                                  scenario.id === 5 ? "# Escribe tu código aquí...\n" : 
+                                  scenario.id === 6 ? "# Escribe tu código aquí...\n" : 
+                                  scenario.id === 7 ? "contador = 0\n# Escribe tu código aquí...\n" : 
+                                  scenario.id === 8 ? "# Escribe tu código aquí...\n" : 
+                                  scenario.id === 9 ? "# Escribe tu código aquí...\n" : 
+                                  "");
+                editorEl.classList.remove('hidden');
+                runButton.classList.remove('hidden');
+            } else {
+                // Escenario sin tarea (como la introducción)
+                taskEl.textContent = scenario.task || "No hay ejercicio en esta unidad.";
+                editorEl.value = "";
+                editorEl.classList.add('hidden');
+                runButton.classList.add('hidden');
+            }
+            
+            // 4. Limpiar Resultados y Consola
+            resultsArea.classList.add('hidden');
+            nextButton.classList.add('hidden');
+            consoleOutputContainer.classList.add('hidden');
+
+
+            // 5. Si la unidad ya fue completada, mostrar el botón de siguiente y la salida simulada
+            if (completionStatus[index]) {
+                resultsArea.classList.remove('hidden', 'feedback-error');
+                resultsArea.classList.add('feedback-success');
+                feedbackMessage.textContent = "¡Ya has completado este escenario! Puedes pasar al siguiente.";
+                nextButton.classList.remove('hidden');
+                
+                // Para mostrar la salida anterior, ejecutamos la validación sin código (la salida es estática)
+                const completedOutput = SCENARIOS[index].validation(""); // Pasamos string vacío
+
+                if (completedOutput.consoleOutput) {
+                    consoleOutputEl.textContent = completedOutput.consoleOutput;
+                    consoleOutputContainer.classList.remove('hidden');
+                }
+            }
+        }
+
+        // Función para manejar el botón de Ejecutar/Verificar
+        function runCode() {
+            const code = document.getElementById('code-editor').value;
+            const scenario = SCENARIOS[currentScenarioIndex];
+            const resultsArea = document.getElementById('results-area');
+            const feedbackMessage = document.getElementById('feedback-message');
+            const nextButton = document.getElementById('next-button');
+            const consoleOutputContainer = document.getElementById('console-output-container');
+            const consoleOutputEl = document.getElementById('console-output');
+
+            // Validar el código usando la función específica del escenario
+            const validationResult = scenario.validation(code);
+
+            resultsArea.classList.remove('hidden');
+            feedbackMessage.textContent = validationResult.feedback;
+            nextButton.classList.add('hidden'); // Ocultar por defecto
+            consoleOutputContainer.classList.remove('hidden'); // Mostrar el contenedor de la consola
+
+            if (validationResult.success) {
+                // Éxito
+                resultsArea.classList.remove('feedback-error');
+                resultsArea.classList.add('feedback-success');
+                
+                // Mostrar salida simulada de la consola
+                if (validationResult.consoleOutput) {
+                    consoleOutputEl.textContent = validationResult.consoleOutput;
+                } else {
+                    consoleOutputEl.textContent = "El código se ejecutó correctamente. No se detectó salida en la consola.";
+                }
+                
+                // Marcar el escenario como completado y actualizar la interfaz
+                completionStatus[currentScenarioIndex] = true;
+                localStorage.setItem('completionStatus', JSON.stringify(completionStatus)); // Guardar estado
+                updateSidebarLockStatus();
+
+                // Mostrar botón para avanzar
+                if (currentScenarioIndex < SCENARIOS.length - 1) {
+                    nextButton.classList.remove('hidden');
+                } else {
+                    feedbackMessage.textContent += " ¡Has completado todas las unidades iniciales!";
+                }
+
+            } else {
+                // Error
+                resultsArea.classList.remove('feedback-success');
+                resultsArea.classList.add('feedback-error');
+
+                // Mostrar el feedback del error en el área de la consola
+                consoleOutputEl.textContent = `ERROR de Validación:\n${validationResult.feedback}`;
+            }
+        }
+
+        // Función para avanzar al siguiente escenario
+        function loadNextScenario() {
+            const nextIndex = currentScenarioIndex + 1;
+            if (nextIndex < SCENARIOS.length) {
+                loadScenario(nextIndex);
+            } else {
+                // Fin de los escenarios
+                const resultsArea = document.getElementById('results-area');
+                const feedbackMessage = document.getElementById('feedback-message');
+                
+                resultsArea.classList.remove('hidden', 'feedback-error');
+                resultsArea.classList.add('feedback-success');
+                feedbackMessage.textContent = "¡Felicidades! Has completado todos los escenarios iniciales.";
+                document.getElementById('next-button').classList.add('hidden');
+                document.getElementById('console-output-container').classList.add('hidden');
+            }
+        }
+
+        // Función de inicialización
+        function initApp() {
+            const unitList = document.getElementById('unit-list');
+            
+            // Inicializar el estado de completado
+            const storedCompletionStatus = localStorage.getItem('completionStatus');
+            if (storedCompletionStatus) {
+                try {
+                    completionStatus = JSON.parse(storedCompletionStatus);
+                    while (completionStatus.length < SCENARIOS.length) {
+                        completionStatus.push(false);
+                    }
+                } catch (e) {
+                    console.error("Error al parsear completionStatus, reiniciando.", e);
+                    completionStatus = new Array(SCENARIOS.length).fill(false);
+                }
+            } else {
+                completionStatus = new Array(SCENARIOS.length).fill(false);
+            }
+
+            // El primer escenario (Introducción) siempre se considera completado.
+            completionStatus[0] = true; 
+
+            // Crear los ítems de navegación
+            SCENARIOS.forEach((scenario, index) => {
+                const li = document.createElement('li');
+                li.className = "mb-2";
+                const a = document.createElement('a');
+                a.id = `nav-item-${index}`;
+                a.href = "#";
+                a.textContent = scenario.title;
+                a.className = "nav-item block transition duration-150 cursor-pointer";
+                a.onclick = (e) => {
+                    e.preventDefault();
+                    // Impedir el clic si está bloqueado
+                    if (index > 0 && !completionStatus[index - 1]) {
+                        return;
+                    }
+                    loadScenario(index);
+                };
+                li.appendChild(a);
+                unitList.appendChild(li);
+            });
+            
+            // Actualizar el estado inicial de bloqueo antes de cargar
+            updateSidebarLockStatus();
+
+            // Determinar qué escenario cargar al inicio
+            let initialIndex = 0;
+            for (let i = 0; i < completionStatus.length; i++) {
+                if (completionStatus[i]) {
+                    initialIndex = i;
+                } else {
+                    initialIndex = i;
+                    break;
+                }
+            }
+            loadScenario(initialIndex);
+        }
+
+        // Iniciar la aplicación al cargar la página
+        window.onload = initApp;
+
+    </script>
 </body>
 </html>
