@@ -13,7 +13,7 @@ const SCENARIOS = [
         title: "0. Introducción a Python",
         explanation: `Python es uno de los lenguajes de programación más populares del mundo. Es conocido por su sintaxis clara y legible, lo que lo hace perfecto para principiantes.
 
-                <p class="mt-3">Se utiliza en campos como desarrollo web, ciencia de datos, inteligencia artificial y automatización.</p>`,
+                <p class="mt-3"> Se utiliza en campos como desarrollo web, ciencia de datos, inteligencia artificial y automatización.</p>`,
         task: "No hay ejercicio en esta unidad. Presiona 'Siguiente Unidad' para comenzar.",
         validation: (code) => {
             // La unidad de introducción siempre se considera completada con el botón "Siguiente Unidad"
@@ -565,4 +565,3 @@ function initApp() {
 
 // Iniciar la aplicación al cargar la página
 window.onload = initApp;
-

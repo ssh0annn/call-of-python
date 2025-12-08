@@ -1,93 +1,3 @@
-:root {
-    --color-bg-dark: #1e1231;
-    --color-primary: #8b5cf6;
-    --color-secondary: #c4b5fd;
-    --color-text-light: #f3f4f6;
-    --color-text-dark: #1f2937;
-    --color-success-base: #10b981;
-    --color-error-base: #ef4444;
-}
-
-body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, var(--color-bg-dark) 0%, #3e1f75 100%);
-    color: var(--color-text-light);
-    min-height: 100vh;
-}
-
-.glass-panel {
-    background-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
-.code-editor {
-    font-family: monospace;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: #4CAF50;
-    padding: 1rem;
-    border-radius: 12px;
-    resize: none;
-    min-height: 200px;
-}
-
-.nav-item {
-    color: var(--color-text-light);
-    padding: 0.75rem;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.nav-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.nav-item.active {
-    background: var(--color-primary);
-    color: white;
-    font-weight: 600;
-    box-shadow: 0 4px 10px rgba(139, 92, 246, 0.5);
-}
-
-code {
-    background-color: rgba(139, 92, 246, 0.2);
-    color: var(--color-secondary);
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-weight: 600;
-}
-
-.custom-button {
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 700;
-    transition: all 0.3s;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
-.run-button {
-    background-color: var(--color-success-base);
-    color: var(--color-text-dark);
-}
-
-.next-button {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-.feedback-success {
-    background-color: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.5);
-}
-
-.feedback-error {
-    background-color: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.5);
-}
-<style>
         /* Paleta de colores inspirada en el tema oscuro y morado/índigo */
         :root {
             --color-bg-dark: #1e1231; /* Morado/Índigo muy oscuro */
@@ -95,6 +5,9 @@ code {
             --color-secondary: #c4b5fd; /* Ígdigo claro */
             --color-text-light: #f3f4f6;
             --color-text-dark: #1f2937;
+            /* Nuevos colores base para feedback */
+            --color-success-base: #10b981; /* Esmeralda/Verde */
+            --color-error-base: #ef4444; /* Rojo */
         }
 
         /* Fondo degradado oscuro */
@@ -171,11 +84,11 @@ code {
         }
 
         .run-button {
-            background-color: #22c55e; /* Verde brillante */
-            color: white;
+            background-color: var(--color-success-base); /* Verde brillante */
+            color: var(--color-text-dark);
         }
         .run-button:hover {
-            background-color: #16a34a; /* Verde oscuro */
+            background-color: #059669; /* Verde oscuro */
             transform: translateY(-2px);
         }
 
@@ -188,15 +101,22 @@ code {
             transform: translateY(-2px);
         }
 
-        /* Estilos para el área de resultados (feedback) */
+        /* ------------------------------------------
+        NUEVOS ESTILOS PARA EL ÁREA DE RESULTADOS 
+        (Más suaves e integrados con el Glassmorphism)
+        ------------------------------------------
+        */
         .feedback-success {
-            background-color: rgba(34, 197, 94, 0.2); /* Verde semitransparente */
-            border-left: 4px solid #16a34a;
-            color: #bbf7d0; /* Texto verde muy claro */
+            /* Fondo ligeramente verde y semitransparente, mezclado con el fondo oscuro */
+            background-color: rgba(16, 185, 129, 0.1); /* Verde esmeralda (10%) */
+            border: 1px solid rgba(16, 185, 129, 0.5); /* Borde suave de color éxito */
+            color: var(--color-secondary); /* Texto púrpura claro */
+            backdrop-filter: blur(5px);
         }
         .feedback-error {
-            background-color: rgba(239, 68, 68, 0.2); /* Rojo semitransparente */
-            border-left: 4px solid #dc2626;
-            color: #fca5a5; /* Texto rojo muy claro */
+            /* Fondo ligeramente rojo y semitransparente */
+            background-color: rgba(239, 68, 68, 0.1); /* Rojo (10%) */
+            border: 1px solid rgba(239, 68, 68, 0.5); /* Borde suave de color error */
+            color: var(--color-secondary); /* Texto púrpura claro */
+            backdrop-filter: blur(5px);
         }
-   
