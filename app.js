@@ -334,7 +334,6 @@ function updateSidebarLockStatus() {
     });
 }
 
-
 // Función para cargar el escenario actual
 function loadScenario(index) {
 

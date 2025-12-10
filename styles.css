@@ -40,6 +40,8 @@
             transition: all 0.2s;
         }
 
+        
+
         /* Resaltar el tema actual en el sidebar */
         .nav-item {
             color: var(--color-text-light);
@@ -70,7 +72,7 @@
         }
 
         /* Ajustes de color de texto para las secciones de contenido */
-        #topic-title, #task-description, #theory-section, .text-content {
+        #topic-title, #task-description, #theory-sec52tion, .text-content {
             color: var(--color-text-light);
         }
 
