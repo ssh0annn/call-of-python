@@ -1,27 +1,37 @@
-<div class="border border-border rounded-lg bg-background p-6 shadow-sm"><div class="prose prose-sm md:prose-base lg:prose-lg max-w-none prose-headings:font-bold prose-a:text-blue-600" style="user-select: none;"><div id="top" class="">
+# 🐍 Python Inmersivo: Conceptos Esenciales
 
-<div align="center" class="text-center">
-<h1>CALL OF PYTHON 🐍</h1>
-<p><em>Juego interactibo para el apredizaje de los conceptos con python.</em></p>
-
-## 🧬 **Tech Stack**
-
-### 🔹 **Backend**
-![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
-
-### 🔹 **Base de Datos**
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)
-
-### 🔹 **Frontend**
-![HTML](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
-![CSS](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
-
-
-### 🔹 **Deployment**
-![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)
+> Una plataforma web interactiva y moderna para aprender los fundamentos de Python directamente desde el navegador, combinando teoría, práctica en vivo y retroalimentación instantánea.
 
 ---
+
+## 🚀 Vista Previa y Características
+
+**Python Inmersivo** está diseñado con un enfoque visual limpio basado en *Glassmorphism*, ofreciendo una experiencia de usuario fluida, atractiva y libre de distracciones.
+
+*   **📚 Sistema de Unidades Dinámicas:** Navegación lateral estructurada para recorrer los conceptos esenciales de Python paso a paso.
+*   **💻 Entorno de Práctica Integrado:** Editor de código interactivo (`textarea` optimizado) para escribir y probar soluciones en tiempo real.
+*   **⚡ Ejecución y Verificación:** Botón de validación que analiza el código del usuario y muestra la salida en una consola simulada al estilo terminal.
+*   **🎨 Diseño Responsivo y Moderno:** Estilizado con Tailwind CSS y tipografía profesional (Google Fonts *Inter*).
+
+---
+
+## 🛠️ Tecnologías y Stack
+
+El proyecto está desarrollado con tecnologías web estándar, sin necesidad de configuraciones complejas de backend para su visualización inicial:
+
+*   **HTML5** – Estructura semántica.
+*   **Tailwind CSS** – Framework de estilos (vía CDN).
+*   **JavaScript (Vanilla)** – Lógica dinámica de navegación, inyección de unidades y gestión de eventos de ejecución.
+*   **CSS Custom Properties** – Efectos visuales de vidrio (*Glassmorphism*) y temas personalizables.
+
+---
+
+## 📂 Estructura del Proyecto
+
+```text
+python-inmersivo/
+│
+├── index.html        # Estructura principal y diseño de la interfaz
+├── styles.css        # Estilos personalizados, efectos glassmorphism y variables
+├── app.js            # Lógica interactiva (unidades, teoría y evaluador de código)
+└── README.md         # Documentación del proyecto
